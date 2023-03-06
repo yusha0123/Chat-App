@@ -1,12 +1,21 @@
-import firebase from 'firebase/compat/app';
-import 'firebase/compat/auth';
-import 'firebase/compat/firestore';
+import "firebase/compat/auth";
+import { getAuth } from "firebase/auth";
+import { initializeApp } from "firebase/app";
+import "firebase/firestore";
+import { getFirestore } from "firebase/firestore";
+import { getStorage } from "firebase/storage";
 
-firebase.initializeApp({
-   //your config here
-  })
-  
-  const auth = firebase.auth();
-  const firestore = firebase.firestore();
+const firebaseConfig = {
+  apiKey: import.meta.env.VITE_FIREBASE_KEY,
+  authDomain: import.meta.env.VITE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_MSG_SENDER_ID,
+  appId: import.meta.env.VITE_APP_ID,
+};
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const firestore = getFirestore(app);
+const storage = getStorage(app);
 
-  export {auth,firestore}
+export { auth, firestore, storage };
