@@ -15,19 +15,32 @@ import {
   AlertIcon,
   CloseButton,
   useToast,
+  Divider,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  ModalCloseButton,
+  FormHelperText,
+  useBreakpointValue,
 } from "@chakra-ui/react";
 import { useState } from "react";
-import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
-import { Link } from "react-router-dom";
+import { ViewIcon, ViewOffIcon, EmailIcon } from "@chakra-ui/icons";
 import { useNavigate } from "react-router-dom";
 import { auth } from "../FireBase";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import {
+  signInWithEmailAndPassword,
+  sendPasswordResetEmail,
+} from "firebase/auth";
 import { useTitle } from "react-haiku";
 
 const Login = () => {
   useTitle("Chat App | Login");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const modalSize = useBreakpointValue({ base: "xs", md: "md", xl: "xl" });
   const navigate = useNavigate();
   const toast = useToast();
   const [data, setData] = useState({
@@ -37,6 +50,10 @@ const Login = () => {
   const [alert, setAlert] = useState({
     open: false,
     message: "",
+  });
+  const [modal, setModal] = useState({
+    open: false,
+    email: "",
   });
 
   const handleSubmit = (e) => {
@@ -74,99 +91,207 @@ const Login = () => {
         });
       });
   };
+
+  const sendEmail = (e) => {
+    e.preventDefault();
+    sendPasswordResetEmail(auth, modal.email)
+      .then(() => {
+        toast({
+          title: "Password reset email sent!",
+          description: "Don't forget to check your spam folder.",
+          status: "success",
+          duration: 5000,
+          isClosable: true,
+          position: "top",
+        });
+      })
+      .catch((error) => {
+        toast({
+          title: error.code,
+          description: error.message,
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+          position: "top",
+        });
+      });
+    setModal({
+      open: false,
+      email: "",
+    });
+  };
   return (
-    <Flex minH={"100vh"} align={"center"} justify={"center"} bg="gray.200">
-      <Box
-        rounded={"lg"}
-        bg="white"
-        boxShadow={"lg"}
-        py={8}
-        px={6}
-        w={{ base: "90%", md: "50%", lg: "30%" }}
-      >
-        <Heading fontSize={"2xl"} textAlign="center" mb={6}>
-          Sign in to your account
-        </Heading>
-        <form onSubmit={handleSubmit}>
-          <Stack spacing={1}>
-            {alert.open && (
-              <Alert status="error" borderRadius={8}>
-                <AlertIcon />
-                {alert.message}
-                <CloseButton
-                  onClick={() => {
-                    setAlert({
-                      open: false,
-                      message: "",
-                    });
-                  }}
-                  ml="auto"
-                />
-              </Alert>
-            )}
-            <FormControl isRequired>
-              <FormLabel>Email address</FormLabel>
-              <Input
-                type="email"
-                autoComplete="off"
-                value={data.email}
-                onChange={(e) => {
-                  setData({
-                    ...data,
-                    email: e.target.value,
-                  });
-                }}
-              />
-            </FormControl>
-            <FormControl isRequired>
-              <FormLabel>Password</FormLabel>
-              <InputGroup>
+    <>
+      <Flex minH={"100vh"} align={"center"} justify={"center"} bg="gray.200">
+        <Box
+          rounded={"lg"}
+          bg="white"
+          boxShadow={"lg"}
+          py={8}
+          px={6}
+          w={{ base: "90%", md: "50%", lg: "30%" }}
+        >
+          <Heading fontSize={"2xl"} textAlign="center" mb={6}>
+            Sign in to your account
+          </Heading>
+          <form onSubmit={handleSubmit}>
+            <Stack spacing={1}>
+              {alert.open && (
+                <Alert status="error" borderRadius={8}>
+                  <AlertIcon />
+                  {alert.message}
+                  <CloseButton
+                    onClick={() => {
+                      setAlert({
+                        open: false,
+                        message: "",
+                      });
+                    }}
+                    ml="auto"
+                  />
+                </Alert>
+              )}
+              <FormControl isRequired>
+                <FormLabel>Email address</FormLabel>
                 <Input
-                  type={showPassword ? "text" : "password"}
+                  type="email"
                   autoComplete="off"
-                  value={data.password}
+                  value={data.email}
                   onChange={(e) => {
                     setData({
                       ...data,
-                      password: e.target.value,
+                      email: e.target.value,
                     });
                   }}
                 />
-                <InputRightElement h={"full"}>
-                  <Button
-                    variant={"ghost"}
-                    onClick={() =>
-                      setShowPassword((showPassword) => !showPassword)
-                    }
-                  >
-                    {showPassword ? <ViewIcon /> : <ViewOffIcon />}
-                  </Button>
-                </InputRightElement>
-              </InputGroup>
-            </FormControl>
-          </Stack>
-          <Stack spacing={3} mt={3}>
+              </FormControl>
+              <FormControl isRequired>
+                <FormLabel>Password</FormLabel>
+                <InputGroup>
+                  <Input
+                    type={showPassword ? "text" : "password"}
+                    autoComplete="off"
+                    value={data.password}
+                    onChange={(e) => {
+                      setData({
+                        ...data,
+                        password: e.target.value,
+                      });
+                    }}
+                  />
+                  <InputRightElement h={"full"}>
+                    <Button
+                      variant={"ghost"}
+                      onClick={() =>
+                        setShowPassword((showPassword) => !showPassword)
+                      }
+                    >
+                      {showPassword ? <ViewIcon /> : <ViewOffIcon />}
+                    </Button>
+                  </InputRightElement>
+                </InputGroup>
+              </FormControl>
+            </Stack>
+            <Stack spacing={3} mt={3}>
+              <Button
+                bg={"blue.400"}
+                color={"white"}
+                _hover={{
+                  bg: "blue.600",
+                }}
+                type="submit"
+                isLoading={loading}
+              >
+                Continue
+              </Button>
+              <Text textAlign="center" fontSize="md">
+                Don't have an account?{" "}
+                <Button
+                  colorScheme="teal"
+                  variant="link"
+                  onClick={() => navigate("/register")}
+                >
+                  Sign Up
+                </Button>
+              </Text>
+              <Divider />
+              <Button
+                colorScheme="teal"
+                variant="link"
+                onClick={() => {
+                  setModal({
+                    ...modal,
+                    open: true,
+                  });
+                }}
+              >
+                Forgot Password ?
+              </Button>
+            </Stack>
+          </form>
+        </Box>
+      </Flex>
+      <Modal
+        isOpen={modal.open}
+        onClose={() => {
+          setModal({
+            open: false,
+            email: "",
+          });
+        }}
+        size={modalSize}
+      >
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader textAlign="center">Reset Password</ModalHeader>
+          <ModalCloseButton />
+          <Divider />
+          <ModalBody>
+            <form onSubmit={sendEmail}>
+              <Stack spacing={3} alignItems="center">
+                <FormControl isRequired>
+                  <FormLabel>Email address</FormLabel>
+                  <Input
+                    type="email"
+                    placeholder="Type your response here"
+                    value={modal.email}
+                    onChange={(e) => {
+                      setModal({
+                        ...modal,
+                        email: e.target.value,
+                      });
+                    }}
+                  />
+                </FormControl>
+                <Button
+                  leftIcon={<EmailIcon />}
+                  colorScheme="messenger"
+                  type="submit"
+                >
+                  Send Email
+                </Button>
+              </Stack>
+            </form>
+          </ModalBody>
+          <Divider />
+          <ModalFooter>
             <Button
-              bg={"blue.400"}
-              color={"white"}
-              _hover={{
-                bg: "blue.600",
+              colorScheme="red"
+              mr={3}
+              onClick={() => {
+                setModal({
+                  ...modal,
+                  open: false,
+                });
               }}
-              type="submit"
-              isLoading={loading}
+              mx="auto"
             >
-              Continue
+              Cancel
             </Button>
-            <Text textAlign="center" fontSize="md">
-              Don't have an account?{" "}
-              <Link to="/register" style={{ color: "#3A98B9" }}>
-                Sign Up
-              </Link>
-            </Text>
-          </Stack>
-        </form>
-      </Box>
-    </Flex>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+    </>
   );
 };
 

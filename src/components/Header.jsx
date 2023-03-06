@@ -201,8 +201,8 @@ export default function Header() {
           <ModalBody>
             <VStack gap={1} alignItems="center">
               <Avatar src={selectedUser && selectedUser.photoURL} size="2xl" />
-              <Text>{selectedUser && selectedUser.name}</Text>
-              <Text>{selectedUser && selectedUser.email}</Text>
+              <Text>Name : {selectedUser && selectedUser.name}</Text>
+              <Text>Email : {selectedUser && selectedUser.email}</Text>
             </VStack>
           </ModalBody>
         </ModalContent>

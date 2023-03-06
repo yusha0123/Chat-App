@@ -18,7 +18,6 @@ import {
 } from "@chakra-ui/react";
 import { useState } from "react";
 import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
-import { Link } from "react-router-dom";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth, firestore } from "../FireBase";
 import { useNavigate } from "react-router-dom";
@@ -228,9 +227,13 @@ const Register = () => {
             </Button>
             <Text textAlign="center" fontSize="md">
               Already Have an Account?{" "}
-              <Link to="/login" style={{ color: "#3A98B9" }}>
-                Sign In
-              </Link>
+              <Button
+                colorScheme="teal"
+                variant="link"
+                onClick={() => navigate("/login")}
+              >
+                Sign Up
+              </Button>
             </Text>
           </Stack>
         </form>
