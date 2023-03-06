@@ -17,6 +17,12 @@ import {
   Text,
   HStack,
   useToast,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalCloseButton,
 } from "@chakra-ui/react";
 import { HamburgerIcon } from "@chakra-ui/icons";
 import { AiFillCamera, AiOutlineLogout } from "react-icons/ai";
@@ -31,6 +37,7 @@ export default function Header() {
   const [open, setOpen] = useState(false);
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
   const toast = useToast();
 
   const changeAvatar = async (e) => {
@@ -50,6 +57,7 @@ export default function Header() {
       await updateDoc(doc(firestore, "users", auth.currentUser.uid), {
         name: auth.currentUser.displayName,
         photoURL: avatarURL,
+        email: auth.currentUser.email,
       });
       setLoading(false);
       toast({
@@ -152,6 +160,8 @@ export default function Header() {
                   }}
                   p={2}
                   borderRadius={10}
+                  cursor="pointer"
+                  onClick={() => setSelectedUser(user)}
                 >
                   <Avatar src={user.photoURL} />
                   <Text>
@@ -174,6 +184,26 @@ export default function Header() {
           </DrawerFooter>
         </DrawerContent>
       </Drawer>
+      <Modal
+        isOpen={selectedUser !== null}
+        onClose={() => setSelectedUser(null)}
+      >
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader textAlign="center">
+            {selectedUser && "User Details"}
+          </ModalHeader>
+          <ModalCloseButton />
+          <Divider />
+          <ModalBody>
+            <VStack gap={1} alignItems="center">
+              <Avatar src={selectedUser && selectedUser.photoURL} size="2xl" />
+              <Text>{selectedUser && selectedUser.name}</Text>
+              <Text>{selectedUser && selectedUser.email}</Text>
+            </VStack>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
     </>
   );
 }

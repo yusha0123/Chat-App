@@ -74,6 +74,7 @@ const Register = () => {
         });
         await setDoc(doc(firestore, "users", auth.currentUser.uid), {
           name: data.name,
+          email: data.email,
         });
         toast({
           title: "Registration Successful!",
