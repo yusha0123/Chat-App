@@ -106,11 +106,23 @@ const Login = () => {
         });
       })
       .catch((error) => {
+        let errCode = "";
+        let errMsg = "";
+        if (error.code === "auth/invalid-email") {
+          errCode = "Invalid Email Address!";
+          errMsg = "Please retry with a valid Email Address.";
+        } else if (error.code === "auth/user-not-found") {
+          errCode = "User Doesn't Exist!";
+          errMsg = "Please retry with the email associated with your account.";
+        } else {
+          errCode = error.code;
+          errMsg = error.message;
+        }
         toast({
-          title: error.code,
-          description: error.message,
+          title: errCode,
+          description: errMsg,
           status: "error",
-          duration: 5000,
+          duration: 6000,
           isClosable: true,
           position: "top",
         });
