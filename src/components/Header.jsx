@@ -23,6 +23,7 @@ import {
   ModalHeader,
   ModalBody,
   ModalCloseButton,
+  useBreakpointValue,
 } from "@chakra-ui/react";
 import { HamburgerIcon } from "@chakra-ui/icons";
 import { AiFillCamera, AiOutlineLogout } from "react-icons/ai";
@@ -38,6 +39,7 @@ export default function Header() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
+  const modalSize = useBreakpointValue({ base: "xs", md: "md", xl: "xl" });
   const toast = useToast();
 
   const changeAvatar = async (e) => {
@@ -187,6 +189,7 @@ export default function Header() {
       <Modal
         isOpen={selectedUser !== null}
         onClose={() => setSelectedUser(null)}
+        size={modalSize}
       >
         <ModalOverlay />
         <ModalContent>

@@ -81,6 +81,7 @@ const Register = () => {
           status: "success",
           duration: 5000,
           isClosable: true,
+          position: "top",
         });
         navigate("/");
       })
