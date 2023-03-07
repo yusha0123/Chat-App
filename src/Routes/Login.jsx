@@ -23,7 +23,6 @@ import {
   ModalFooter,
   ModalBody,
   ModalCloseButton,
-  FormHelperText,
   useBreakpointValue,
 } from "@chakra-ui/react";
 import { useState } from "react";
@@ -40,6 +39,7 @@ const Login = () => {
   useTitle("Chat App | Login");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [loading1, setLoading1] = useState(false);
   const modalSize = useBreakpointValue({ base: "xs", md: "md", xl: "xl" });
   const navigate = useNavigate();
   const toast = useToast();
@@ -94,6 +94,7 @@ const Login = () => {
 
   const sendEmail = (e) => {
     e.preventDefault();
+    setLoading1(true);
     sendPasswordResetEmail(auth, modal.email)
       .then(() => {
         toast({
@@ -126,11 +127,14 @@ const Login = () => {
           isClosable: true,
           position: "top",
         });
+      })
+      .finally(() => {
+        setModal({
+          open: false,
+          email: "",
+        });
+        setLoading1(false);
       });
-    setModal({
-      open: false,
-      email: "",
-    });
   };
   return (
     <>
@@ -279,6 +283,8 @@ const Login = () => {
                   leftIcon={<EmailIcon />}
                   colorScheme="messenger"
                   type="submit"
+                  isLoading={loading1}
+                  loadingText="Please wait..."
                 >
                   Send Email
                 </Button>

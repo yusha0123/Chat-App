@@ -36,7 +36,7 @@ const SendMsg = () => {
         <InputGroup>
           <Input
             type="text"
-            name="message"
+            autoComplete="off"
             placeholder="Type your message here"
             value={msg}
             onChange={(e) => setMsg(e.target.value)}
